@@ -32,5 +32,13 @@ module CoinMP
     Methods: #{methods}
     "
     end
+
+    class Problem
+      @handle : LibCoinMP::Hprob
+      getter name
+      def initialize(@name : String)
+        @handle = LibCoinMP.create_problem(@name)
+      end  
+    end
   end
 end
