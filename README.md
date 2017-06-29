@@ -1,37 +1,12 @@
 # solver
+Idea is to provide wrapper for most performant opensource optimization tools that are available.
 
-TODO: Write a description here
+According to http://plato.asu.edu/bench.html CLP is pretty good for linear programming, and other projects of COIN-OR (CBC and IPOPT) are fine for nonlinear. 
 
-## Installation
+IPOPT is pretty complex to even get installed, so it perhaps doesn't fit in the general-purpose scientific library. 
 
-Add this to your application's `shard.yml`:
+[CoinMP](https://projects.coin-or.org/CoinMP) is decribed as simple API for CLP and CBC (just what I need!), but appears to be buggy and obsolete.
 
-```yaml
-dependencies:
-  solver:
-    github: konovod/solver
-```
+Will check if [SYMPHONY](https://projects.coin-or.org/SYMPHONY) is easy enough to use and to distribute.
 
-## Usage
-
-```crystal
-require "solver"
-```
-
-TODO: Write usage instructions here
-
-## Development
-
-TODO: Write development instructions here
-
-## Contributing
-
-1. Fork it ( https://github.com/konovod/solver/fork )
-2. Create your feature branch (git checkout -b my-new-feature)
-3. Commit your changes (git commit -am 'Add some feature')
-4. Push to the branch (git push origin my-new-feature)
-5. Create a new Pull Request
-
-## Contributors
-
-- [[your-github-name]](https://github.com/konovod) Konovod - creator, maintainer
+Fallback is to use [CLP](https://projects.coin-or.org/CLP) (and maybe [CBC](https://projects.coin-or.org/Cbc)?) directly and then go check other projects for quadratic\nonlinear tasks.
