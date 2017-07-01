@@ -1,7 +1,4 @@
 fun create_permanent_cut_pools = sym_create_permanent_cut_pools(env : Environment, cp_num : LibC::Int*) : LibC::Int
-fun explicit_load_problem = sym_explicit_load_problem(env : Environment, numcols : LibC::Int, numrows : LibC::Int, start : LibC::Int*, index : LibC::Int*, value : LibC::Double*, collb : LibC::Double*, colub : LibC::Double*, is_int : LibC::Char*, obj : LibC::Double*, obj2 : LibC::Double*, rowsen : LibC::Char*, rowrhs : LibC::Double*, rowrng : LibC::Double*, make_copy : LibC::Char) : LibC::Int
-
-fun is_abandoned = sym_is_abandoned(env : Environment) : LibC::Int
 
 fun get_obj_sense = sym_get_obj_sense(env : Environment, sense : LibC::Int*) : LibC::Int
 fun get_infinity = sym_get_infinity : LibC::Double

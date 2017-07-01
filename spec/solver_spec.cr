@@ -43,7 +43,7 @@ describe Solver do
 
   it "loads explicit problem" do
     s1 = Symphony::Solver.new
-    problem = Symphony::Problem.new(
+    problem = Symphony::Problem.from_dense(
       c: Linalg::Mat.row([1, 7, 4, 2, 3, 5]),
       a_eq: Linalg::GMat.new([
         [1, 1, 1, 0, 0, 0],
@@ -56,6 +56,8 @@ describe Solver do
     s1.load_explicit(problem)
     s1.solve
     s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
+    s1.solution_x.should eq [15, 5, 10, 0, 20, 0]
+    s1.solution_f.should eq 150
     s1.free!
   end
 end
