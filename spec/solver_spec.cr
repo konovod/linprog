@@ -60,4 +60,12 @@ describe Solver do
     s1.solution_f.should eq 150
     s1.free!
   end
+
+  it "allows to set and get optimization direction" do
+    s1 = Symphony::Solver.new
+    s1.direction.should eq Symphony::Direction::Minimize
+    s1.direction = Symphony::Direction::Maximize
+    s1.direction.should eq Symphony::Direction::Maximize
+    s1.free!
+  end
 end

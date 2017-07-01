@@ -7,8 +7,8 @@ module Symphony
     LP
   end
   enum Direction
-    Minimize
-    Maximize
+    Minimize =  1
+    Maximize = -1
   end
 
   class Problem
@@ -169,6 +169,15 @@ module Symphony
       result
     end
 
+    def direction
+      call get_obj_sense, out var
+      Direction.new(var)
+    end
+
+    def direction=(value : Direction)
+      call set_obj_sense, value.to_i
+    end
+
     # def find_initial_bounds
     #   call find_initial_bounds
     # end
@@ -180,15 +189,6 @@ module Symphony
     #
     # def mc_solve
     #   call mc_solve
-    # end
-
-    # def direction
-    #   call get_obj_sense, out var
-    #   var
-    # end
-    # def direction=(value)
-    #   call set_obj_sense, value
-    #   var
     # end
 
   end
