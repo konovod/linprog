@@ -115,4 +115,14 @@ describe Solver do
     solver.solve
     solver.solution_f.should eq -2
   end
+
+  it "allows simplified interface" do
+    x, f = Symphony.lpsolve(
+      c: Linalg::GMat.new([[0, -1]]),
+      a_ub: Linalg::GMat.new([[-1, 1], [3, 2], [2, 3]]),
+      b_ub: Linalg::GMat.new([[1, 12, 12]]).t,
+      bounds: {Symphony::Constraint.integer, Symphony::Constraint.new(0.0, 6.0, true)}
+    )
+    pp x, f
+  end
 end

@@ -1,6 +1,9 @@
 require "./libSymphony"
 
 module Symphony
+  class LinProgError < Exception
+  end
+
   alias Status = LibSymphony::Status
   enum FileFormat
     MPS
@@ -25,7 +28,7 @@ module Symphony
     end
 
     def self.integer
-      new(Float64.new(Int64::MIN), Float64.new(Int64::MAX), true)
+      new(Float64::MIN, Float64::MAX, true)
     end
 
     def self.binary
@@ -115,7 +118,7 @@ module Symphony
 
     private macro call(function, *args)
       st = LibSymphony.{{function}}(@handle.not_nil!, {{*args}})
-      raise st.to_s if st.to_i < 0
+      raise LinProgError.new(st.to_s) if st.to_i < 0
       st
     end
 
@@ -235,5 +238,19 @@ module Symphony
     #   call mc_solve
     # end
 
+  end
+
+  def self.lpsolve(*args, **named_args)
+    solver = Solver.new
+    solver.load_explicit(Problem.from_dense(**named_args))
+    solver.solve
+    st = solver.status
+    unless st == Status::OPTIMAL_SOLUTION_FOUND
+      solver.free!
+      raise LinProgError.new(st.to_s)
+    end
+    x, f = {solver.solution_x, solver.solution_f}
+    solver.free!
+    {x, f}
   end
 end
