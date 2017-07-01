@@ -92,7 +92,7 @@ module Symphony
     end
 
     def load_gmpl(modelfile : String, datafile : String)
-      call read_gmpl(modelfile, datafile)
+      call read_gmpl, modelfile, datafile
     end
 
     def save(filename : String, format : FileFormat = FileFormat::MPS)
