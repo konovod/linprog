@@ -76,7 +76,7 @@ describe Solver do
     b = Linalg::GMat.new([[6, 4]]).t
     x0_bounds = Symphony::Constraint.none
     x1_bounds = Symphony::Constraint.new(-3.0, Float64::INFINITY)
-    solver = Symphony::Solver::DEFAULT
+    solver = Symphony::Solver.new
     solver.load_explicit Symphony::Problem.from_dense(
       a_ub: a,
       b_ub: b,
@@ -85,5 +85,34 @@ describe Solver do
     )
     solver.solve
     solver.solution_x.should eq [10, -3]
+  end
+
+  it "can solve integer problems" do
+    c = Linalg::GMat.new [[0, -1]]
+    a = Linalg::GMat.new [[-1, 1], [3, 2], [2, 3]]
+    b = Linalg::GMat.new([[1, 12, 12]]).t
+    x0_bounds = Symphony::Constraint.positive
+    x1_bounds = Symphony::Constraint.positive
+    solver = Symphony::Solver.new
+    solver.load_explicit Symphony::Problem.from_dense(
+      a_ub: a,
+      b_ub: b,
+      c: c,
+      bounds: {x0_bounds, x1_bounds}
+    )
+    solver.solve
+    solver.solution_f.should be_close -2.8, 1e-6
+
+    solver.reset
+    x0_bounds = Symphony::Constraint.integer
+    x1_bounds = Symphony::Constraint.integer
+    solver.load_explicit Symphony::Problem.from_dense(
+      a_ub: a,
+      b_ub: b,
+      c: c,
+      bounds: {x0_bounds, x1_bounds}
+    )
+    solver.solve
+    solver.solution_f.should eq -2
   end
 end

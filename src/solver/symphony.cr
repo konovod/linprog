@@ -25,7 +25,7 @@ module Symphony
     end
 
     def self.integer
-      new(-Int64::MIN, -Int64::MAX, true)
+      new(Float64.new(Int64::MIN), Float64.new(Int64::MAX), true)
     end
 
     def self.binary
@@ -81,11 +81,11 @@ module Symphony
       when Constraint
         @collb = Slice(Float64).new(@ncolumns, bounds.min)
         @colub = Slice(Float64).new(@ncolumns, bounds.max)
-        @is_int = Slice(UInt8).new(@ncolumns, bounds.integer ? 0u8 : 1u8)
+        @is_int = Slice(UInt8).new(@ncolumns, bounds.integer ? 1u8 : 0u8)
       else
         @collb = Slice(Float64).new(@ncolumns) { |i| bounds[i].min.as(Float64) }
         @colub = Slice(Float64).new(@ncolumns) { |i| bounds[i].max.as(Float64) }
-        @is_int = Slice(UInt8).new(@ncolumns) { |i| bounds[i].integer ? 0u8 : 1u8 }
+        @is_int = Slice(UInt8).new(@ncolumns) { |i| bounds[i].integer ? 1u8 : 0u8 }
       end
       @obj = Slice(Float64).new(@ncolumns) { |i| Float64.new(c[0, i]) }
       @obj2 = Slice(Float64).new(@ncolumns, 0.0)
@@ -111,7 +111,6 @@ module Symphony
   end
 
   class Solver
-    DEFAULT = new()
     @handle : LibSymphony::Environment?
 
     private macro call(function, *args)
@@ -175,11 +174,8 @@ module Symphony
       free!
     end
 
-    # getter problem : Problem?
-
     def load_explicit(aproblem : Problem)
       raise ArgumentError.new "problem is incorrect" unless aproblem.correct
-      # @problem = aproblem
       call(explicit_load_problem, aproblem.ncolumns, aproblem.nrows,
         aproblem.sparse_starts, aproblem.sparse_indices, aproblem.sparse_values,
         aproblem.collb, aproblem.colub, aproblem.is_int,
