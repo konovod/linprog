@@ -11,17 +11,17 @@ module Symphony
     Maximize = -1
   end
 
-  record Constraint, min : Float64, max : Float64, integer : Bool do
+  record Constraint, min : Float64, max : Float64, integer : Bool = false do
     def self.none
-      new(Float64::MIN, Float64::MAX, false)
+      new(Float64::MIN, Float64::MAX)
     end
 
     def self.positive
-      new(0.0, Float64::MAX, false)
+      new(0.0, Float64::MAX)
     end
 
     def self.negative
-      new(Float64::MIN, 0.0, false)
+      new(Float64::MIN, 0.0)
     end
 
     def self.integer
@@ -112,10 +112,10 @@ module Symphony
 
   class Solver
     DEFAULT = new()
-    @handle : LibSymphony::Environment
+    @handle : LibSymphony::Environment?
 
     private macro call(function, *args)
-      st = LibSymphony.{{function}}(@handle, {{*args}})
+      st = LibSymphony.{{function}}(@handle.not_nil!, {{*args}})
       raise st.to_s if st.to_i < 0
       st
     end
@@ -132,7 +132,9 @@ module Symphony
     end
 
     def free!
+      return unless @handle
       call(close_environment)
+      @handle = nil
     end
 
     def reset
@@ -144,7 +146,7 @@ module Symphony
     end
 
     def clone
-      Solver.new(copy_from: @handle)
+      Solver.new(copy_from: @handle.not_nil!)
     end
 
     def load(filename : String, format : FileFormat = FileFormat::MPS)
