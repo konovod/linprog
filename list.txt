@@ -1,7 +1,5 @@
 fun create_permanent_cut_pools = sym_create_permanent_cut_pools(env : Environment, cp_num : LibC::Int*) : LibC::Int
 
-fun get_sp_size = sym_get_sp_size(env : Environment, size : LibC::Int*) : LibC::Int
-fun get_sp_solution = sym_get_sp_solution(env : Environment, index : LibC::Int, colsol : LibC::Double*, objval : LibC::Double*) : LibC::Int
 fun get_row_activity = sym_get_row_activity(env : Environment, rowact : LibC::Double*) : LibC::Int
 fun get_primal_bound = sym_get_primal_bound(env : Environment, ub : LibC::Double*) : LibC::Int
 fun get_iteration_count = sym_get_iteration_count(env : Environment, numnodes : LibC::Int*) : LibC::Int
