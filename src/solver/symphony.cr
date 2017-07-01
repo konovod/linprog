@@ -169,6 +169,16 @@ module Symphony
       result
     end
 
+    def other_solutions
+      call(get_num_cols, out ncols)
+      call get_sp_size, out nsol
+      result = Array({x: Array(Float64), f: Float64}).new(nsol) do |i|
+        x = Array(Float64).new(ncols, 0.0)
+        call get_sp_solution, i, x, out f
+        {x: x, f: f}
+      end
+    end
+
     def direction
       call get_obj_sense, out var
       Direction.new(var)

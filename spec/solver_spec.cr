@@ -58,6 +58,7 @@ describe Solver do
     s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
     s1.solution_x.should eq [15, 5, 10, 0, 20, 0]
     s1.solution_f.should eq 150
+    s1.other_solutions.size.should be > 0
     s1.free!
   end
 

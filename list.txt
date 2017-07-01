@@ -1,6 +1,5 @@
 fun create_permanent_cut_pools = sym_create_permanent_cut_pools(env : Environment, cp_num : LibC::Int*) : LibC::Int
 
-fun get_infinity = sym_get_infinity : LibC::Double
 fun get_sp_size = sym_get_sp_size(env : Environment, size : LibC::Int*) : LibC::Int
 fun get_sp_solution = sym_get_sp_solution(env : Environment, index : LibC::Int, colsol : LibC::Double*, objval : LibC::Double*) : LibC::Int
 fun get_row_activity = sym_get_row_activity(env : Environment, rowact : LibC::Double*) : LibC::Int
