@@ -9,8 +9,11 @@ describe Solver do
 
   it "creates and copies environment" do
     s1 = Symphony::Solver.new
+    s1.load "./spec/sample.mps"
     s2 = s1.clone
-    pp s1.status, s2.status
+    s1.solve
+    s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
+    s2.status.should eq Symphony::Status::NO_SOLUTION
     s1.free!
     s2.free!
   end
@@ -19,14 +22,14 @@ describe Solver do
     s1 = Symphony::Solver.new
     s1.load "./spec/sample.mps"
     s1.solve
-    pp s1.status
+    s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
     s1.free!
   end
   pending "loads and save gmpl files" do
     s1 = Symphony::Solver.new
     s1.load_gmpl "./spec/sample.mod", "./spec/sample.dat"
     s1.solve
-    pp s1.status
+    s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
     s1.free!
   end
 
@@ -34,7 +37,7 @@ describe Solver do
     s1 = Symphony::Solver.new
     s1.load "./spec/block_milp.lp", Symphony::FileFormat::LP
     s1.solve
-    pp s1.status
+    s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
     s1.free!
   end
 end

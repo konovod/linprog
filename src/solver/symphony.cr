@@ -1,4 +1,7 @@
+require "./libSymphony"
+
 module Symphony
+  alias Status = LibSymphony::Status
   enum FileFormat
     MPS
     LP
@@ -64,6 +67,7 @@ module Symphony
     protected def initialize(*, copy_from)
       @handle = LibSymphony.create_copy_environment(copy_from)
       call(set_user_data, self.as(Void*))
+      call(set_int_param, "verbosity", -1)
     end
 
     def free!
