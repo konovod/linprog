@@ -22,31 +22,45 @@ module Symphony
     getter rowrhs
     getter rowrng
 
-    def initialize(c, a_ub, b_ub, a_eq, b_eq)
+    def initialize(*, c, a_ub, b_ub, a_eq, b_eq)
       raise ArgumentError.new("Columns count of a_ub and a_eq must match") if a_ub.ncolumns != a_eq.ncolumns
       raise ArgumentError.new("Rows count of b_ub and a_ub must match") if a_ub.nrows != b_ub.nrows
       raise ArgumentError.new("Rows count of b_eq and a_eq must match") if a_eq.nrows != b_eq.nrows
       raise ArgumentError.new("Columns count of a_ub and c must match") if a_ub.ncolumns != c.ncolumns
-      raise ArgumentError.new("b_un must have single column") if b_un.ncolumns != 1
+      raise ArgumentError.new("b_ub must have single column") if b_ub.ncolumns != 1
       raise ArgumentError.new("b_eq must have single column") if b_eq.ncolumns != 1
       raise ArgumentError.new("c must have single column") if c.ncolumns != 1
       @nrows = a_ub.nrows + a_eq.nrows
-      @ncolumns = a_un.ncolumns
-      @sparse_starts = Slice(Int32).new(@ncolumns + 1, 0) { |i| i*@nrows }
+      @ncolumns = a_ub.ncolumns
+      @sparse_starts = Slice(Int32).new(@ncolumns + 1) { |i| i*@nrows }
       @sparse_indices = Slice(Int32).new(@nrows*@ncolumns) { |i| i % @nrows }
-      @sparse_values = Slice(Double).new(@nrows*@ncolumns) do |i|
+      @sparse_values = Slice(Float64).new(@nrows*@ncolumns) do |i|
         row = i % @nrows
         column = i / @nrows
         Float64.new(row < a_ub.nrows ? a_ub[row, column] : a_eq[row, column])
       end
-      @collb = Slice(Double).new(@ncolumns, 0.0)
-      @colub = Slice(Double).new(@ncolumns, Math::Infinity)
-      @is_int = Slice(UInt8).new(@ncolumns, 0)
-      @obj = Slice(Double).new(@ncolumns) { |i| Float64.new(c[i, 0]) }
-      @obj2 = Slice(Double).new(@ncolumns, 0.0)
-      @rowsen = Slice(UInt8).new(@nrows) { |i| i < a_ub.nrows ? 'L'.ord : 'E'.ord }
-      @rowrhs = Slice(Double).new(@nrows) { |i| Float64.new(i < a_ub.nrows ? b_ub[i, 0] : b_eq[i, 0]) }
-      @rowrng = Slice(Double).new(@nrows, 0.0)
+      @collb = Slice(Float64).new(@ncolumns, 0.0)
+      @colub = Slice(Float64).new(@ncolumns, Float64::INFINITY)
+      @is_int = Slice(UInt8).new(@ncolumns, 0u8) # false
+      @obj = Slice(Float64).new(@ncolumns) { |i| Float64.new(c[i, 0]) }
+      @obj2 = Slice(Float64).new(@ncolumns, 0.0)
+      @rowsen = Slice(UInt8).new(@nrows) { |i| UInt8.new(i < a_ub.nrows ? 'L'.ord : 'E'.ord) }
+      @rowrhs = Slice(Float64).new(@nrows) { |i| Float64.new(i < a_ub.nrows ? b_ub[i, 0] : b_eq[i, 0]) }
+      @rowrng = Slice(Float64).new(@nrows, 0.0)
+    end
+
+    def initialize(*, c, a_eq, b_eq)
+      initialize(c: c,
+        a_ub: Linalg::Mat.zeros(0, a_eq.ncolumns),
+        b_ub: Linalg::Mat.zeros(0, 1),
+        a_eq: a_eq, b_eq: b_eq)
+    end
+
+    def initialize(*, c, a_ub, b_ub)
+      initialize(c: c,
+        a_eq: Linalg::Mat.zeros(0, a_ub.ncolumns),
+        b_eq: Linalg::Mat.zeros(0, 1),
+        a_ub: a_ub, b_ub: b_ub)
     end
   end
 
@@ -112,8 +126,15 @@ module Symphony
       free!
     end
 
-    def load_explicit(problem : Problem)
-      # call load_explicit,
+    getter problem : Problem?
+
+    def load_explicit(aproblem : Problem)
+      @problem = aproblem
+      call(explicit_load_problem, aproblem.ncolumns, aproblem.nrows,
+        aproblem.sparse_starts, aproblem.sparse_indices, aproblem.sparse_values,
+        aproblem.collb, aproblem.colub, aproblem.is_int,
+        aproblem.obj, aproblem.obj2,
+        aproblem.rowsen, aproblem.rowrhs, aproblem.rowrng, 0_u8)
     end
 
     # def find_initial_bounds

@@ -40,4 +40,22 @@ describe Solver do
     s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
     s1.free!
   end
+
+  it "loads explicit problem" do
+    s1 = Symphony::Solver.new
+    problem = Symphony::Problem.new(
+      c: Linalg::Mat.row([1, 7, 4, 2, 3, 5]),
+      a_eq: Linalg::GMat.new([
+        [1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1],
+        [1, 0, 0, 1, 0, 0],
+        [0, 1, 0, 0, 1, 0],
+        [0, 0, 1, 0, 0, 1],
+      ]),
+      b_eq: Linalg::Mat.column([30, 20, 15, 25, 10]))
+    s1.load_explicit(problem)
+    s1.solve
+    s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
+    s1.free!
+  end
 end
