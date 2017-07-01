@@ -69,3 +69,13 @@ pp x, f
 # there is also more complex interface that allows to save\load problems, but it's WIP
 
 ```
+
+
+## Roadmap:
+
+- [ ] warmstarting
+- [ ] sensitivity analysis
+- [ ] access to solver parameters
+- [ ] way to reset solver properly or otherwise avoid memory leak
+- [ ] sparse matrix support
+- [ ] DSL for problems creation
