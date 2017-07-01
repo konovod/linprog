@@ -69,4 +69,21 @@ describe Solver do
     s1.direction.should eq Symphony::Direction::Maximize
     s1.free!
   end
+
+  it "variables can be constrained" do
+    c = Linalg::GMat.new [[-1, 4]]
+    a = Linalg::GMat.new [[-3, 1], [1, 2]]
+    b = Linalg::GMat.new([[6, 4]]).t
+    x0_bounds = Symphony::Constraint.none
+    x1_bounds = Symphony::Constraint.new(-3.0, Float64::INFINITY)
+    solver = Symphony::Solver::DEFAULT
+    solver.load_explicit Symphony::Problem.from_dense(
+      a_ub: a,
+      b_ub: b,
+      c: c,
+      bounds: {x0_bounds, x1_bounds}
+    )
+    solver.solve
+    solver.solution_x.should eq [10, -3]
+  end
 end

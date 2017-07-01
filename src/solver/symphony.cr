@@ -57,7 +57,7 @@ module Symphony
       raise ArgumentError.new("b_ub must have single column") if b_ub.ncolumns != 1
       raise ArgumentError.new("b_eq must have single column") if b_eq.ncolumns != 1
       raise ArgumentError.new("c must have single row") if c.nrows != 1
-      if bounds.is_a?(Indexable(Constraint)) && c.nrows != bounds.size
+      if bounds.is_a?(Indexable(Constraint)) && c.ncolumns != bounds.size
         raise ArgumentError.new("bounds.size must match columns of c")
       end
       new(c: c, a_ub: a_ub, b_ub: b_ub, a_eq: a_eq, b_eq: b_eq, bounds: bounds)
