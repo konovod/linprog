@@ -1,0 +1,47 @@
+fun create_permanent_cut_pools = sym_create_permanent_cut_pools(env : Environment, cp_num : LibC::Int*) : LibC::Int
+fun explicit_load_problem = sym_explicit_load_problem(env : Environment, numcols : LibC::Int, numrows : LibC::Int, start : LibC::Int*, index : LibC::Int*, value : LibC::Double*, collb : LibC::Double*, colub : LibC::Double*, is_int : LibC::Char*, obj : LibC::Double*, obj2 : LibC::Double*, rowsen : LibC::Char*, rowrhs : LibC::Double*, rowrng : LibC::Double*, make_copy : LibC::Char) : LibC::Int
+
+fun is_abandoned = sym_is_abandoned(env : Environment) : LibC::Int
+
+fun get_obj_sense = sym_get_obj_sense(env : Environment, sense : LibC::Int*) : LibC::Int
+fun get_infinity = sym_get_infinity : LibC::Double
+fun get_col_solution = sym_get_col_solution(env : Environment, colsol : LibC::Double*) : LibC::Int
+fun get_sp_size = sym_get_sp_size(env : Environment, size : LibC::Int*) : LibC::Int
+fun get_sp_solution = sym_get_sp_solution(env : Environment, index : LibC::Int, colsol : LibC::Double*, objval : LibC::Double*) : LibC::Int
+fun get_row_activity = sym_get_row_activity(env : Environment, rowact : LibC::Double*) : LibC::Int
+fun get_obj_val = sym_get_obj_val(env : Environment, objval : LibC::Double*) : LibC::Int
+fun get_primal_bound = sym_get_primal_bound(env : Environment, ub : LibC::Double*) : LibC::Int
+fun get_iteration_count = sym_get_iteration_count(env : Environment, numnodes : LibC::Int*) : LibC::Int
+
+fun set_obj_sense = sym_set_obj_sense(env : Environment, sense : LibC::Int) : LibC::Int
+fun set_col_solution = sym_set_col_solution(env : Environment, colsol : LibC::Double*) : LibC::Int
+fun set_primal_bound = sym_set_primal_bound(env : Environment, bound : LibC::Double) : LibC::Int
+fun set_col_names = sym_set_col_names(env : Environment, colname : LibC::Char**) : LibC::Int
+fun add_col = sym_add_col(env : Environment, numelems : LibC::Int, indices : LibC::Int*, elements : LibC::Double*, collb : LibC::Double, colub : LibC::Double, obj : LibC::Double, is_int : LibC::Char, name : LibC::Char*) : LibC::Int
+fun add_row = sym_add_row(env : Environment, numelems : LibC::Int, indices : LibC::Int*, elements : LibC::Double*, rowsen : LibC::Char, rowrhs : LibC::Double, rowrng : LibC::Double) : LibC::Int
+fun delete_cols = sym_delete_cols(env : Environment, num : LibC::Int, indices : LibC::Int*) : LibC::Int
+fun delete_rows = sym_delete_rows(env : Environment, num : LibC::Int, indices : LibC::Int*) : LibC::Int
+
+fun write_warm_start_desc = sym_write_warm_start_desc(ws : WarmStartDesc, file : LibC::Char*) : LibC::Int
+type WarmStartDesc = Void*
+fun read_warm_start = sym_read_warm_start(file : LibC::Char*) : WarmStartDesc
+fun delete_warm_start = sym_delete_warm_start(ws : WarmStartDesc)
+fun get_warm_start = sym_get_warm_start(env : Environment, copy_warm_start : LibC::Int) : WarmStartDesc
+fun set_warm_start = sym_set_warm_start(env : Environment, ws : WarmStartDesc) : LibC::Int
+
+fun set_int_param = sym_set_int_param(env : Environment, key : LibC::Char*, value : LibC::Int) : LibC::Int
+fun set_dbl_param = sym_set_dbl_param(env : Environment, key : LibC::Char*, value : LibC::Double) : LibC::Int
+fun set_str_param = sym_set_str_param(env : Environment, key : LibC::Char*, value : LibC::Char*) : LibC::Int
+fun get_int_param = sym_get_int_param(env : Environment, key : LibC::Char*, value : LibC::Int*) : LibC::Int
+fun get_dbl_param = sym_get_dbl_param(env : Environment, key : LibC::Char*, value : LibC::Double*) : LibC::Int
+fun get_str_param = sym_get_str_param(env : Environment, key : LibC::Char*, value : LibC::Char**) : LibC::Int
+
+fun get_lb_for_new_rhs = sym_get_lb_for_new_rhs(env : Environment, cnt : LibC::Int, new_rhs_ind : LibC::Int*, new_rhs_val : LibC::Double*, lb_for_new_rhs : LibC::Double*) : LibC::Int
+fun get_ub_for_new_rhs = sym_get_ub_for_new_rhs(env : Environment, cnt : LibC::Int, new_rhs_ind : LibC::Int*, new_rhs_val : LibC::Double*, ub_for_new_rhs : LibC::Double*) : LibC::Int
+fun get_ub_for_new_obj = sym_get_ub_for_new_obj(env : Environment, cnt : LibC::Int, new_obj_ind : LibC::Int*, new_obj_val : LibC::Double*, ub_for_new_obj : LibC::Double*) : LibC::Int
+fun create_copy_warm_start = sym_create_copy_warm_start(ws : WarmStartDesc) : WarmStartDesc
+fun create_copy_mip_desc = sym_create_copy_mip_desc(env : Environment) : MiPdesc
+type MiPdesc = Void*
+
+fun get_presolved_mip_desc = sym_get_presolved_mip_desc(env : Environment) : MiPdesc
+fun test = sym_test(env : Environment, argc : LibC::Int, argv : LibC::Char**, test_status : LibC::Int*) : LibC::Int

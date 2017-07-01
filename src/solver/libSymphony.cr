@@ -1,5 +1,30 @@
 @[Link("Sym")]
 lib LibSymphony
+  enum Status
+    NO_PROBLEM                  = 225
+    NO_SOLUTION                 = 226
+    OPTIMAL_SOLUTION_FOUND      = 227
+    TIME_LIMIT_EXCEEDED         = 228
+    NODE_LIMIT_EXCEEDED         = 229
+    ITERATION_LIMIT_EXCEEDED    = 230
+    TARGET_GAP_ACHIEVED         = 231
+    FOUND_FIRST_FEASIBLE        = 232
+    FINISHED                    = 233
+    UNFINISHED                  = 234
+    FEASIBLE_SOLUTION_FOUND     = 235
+    SIGNAL_CAUGHT               = 236
+    UNBOUNDED                   = 237
+    PREP_OPTIMAL_SOLUTION_FOUND = 238
+    PREP_NO_SOLUTION            = 239
+
+    ERROR_NO_BRANCHING_CANDIDATE = -250
+    ERROR_ILLEGAL_RETURN_CODE    = -251
+    ERROR_NUMERICAL_INSTABILITY  = -252
+    ERROR_COMM_ERROR             = -253
+    ERROR_USER                   = -275
+    PREP_ERROR                   = -276
+  end
+
   fun version = sym_version
   fun open_environment = sym_open_environment : Environment
   type Environment = Void*
@@ -16,9 +41,9 @@ lib LibSymphony
   fun write_lp = sym_write_lp(env : Environment, infile : LibC::Char*) : LibC::Int
   fun load_problem = sym_load_problem(env : Environment) : LibC::Int
   fun find_initial_bounds = sym_find_initial_bounds(env : Environment) : LibC::Int
-  fun solve = sym_solve(env : Environment) : LibC::Int
-  fun warm_solve = sym_warm_solve(env : Environment) : LibC::Int
-  fun mc_solve = sym_mc_solve(env : Environment) : LibC::Int
+  fun solve = sym_solve(env : Environment) : Status
+  fun warm_solve = sym_warm_solve(env : Environment) : Status
+  fun mc_solve = sym_mc_solve(env : Environment) : Status
   fun create_permanent_cut_pools = sym_create_permanent_cut_pools(env : Environment, cp_num : LibC::Int*) : LibC::Int
   fun explicit_load_problem = sym_explicit_load_problem(env : Environment, numcols : LibC::Int, numrows : LibC::Int, start : LibC::Int*, index : LibC::Int*, value : LibC::Double*, collb : LibC::Double*, colub : LibC::Double*, is_int : LibC::Char*, obj : LibC::Double*, obj2 : LibC::Double*, rowsen : LibC::Char*, rowrhs : LibC::Double*, rowrng : LibC::Double*, make_copy : LibC::Char) : LibC::Int
   fun is_abandoned = sym_is_abandoned(env : Environment) : LibC::Int
@@ -27,7 +52,7 @@ lib LibSymphony
   fun is_iteration_limit_reached = sym_is_iteration_limit_reached(env : Environment) : LibC::Int
   fun is_time_limit_reached = sym_is_time_limit_reached(env : Environment) : LibC::Int
   fun is_target_gap_achieved = sym_is_target_gap_achieved(env : Environment) : LibC::Int
-  fun get_status = sym_get_status(env : Environment) : LibC::Int
+  fun get_status = sym_get_status(env : Environment) : Status
   fun get_num_cols = sym_get_num_cols(env : Environment, numcols : LibC::Int*) : LibC::Int
   fun get_num_rows = sym_get_num_rows(env : Environment, numrows : LibC::Int*) : LibC::Int
   fun get_num_elements = sym_get_num_elements(env : Environment, numelems : LibC::Int*) : LibC::Int
