@@ -6,6 +6,7 @@ According to http://plato.asu.edu/bench.html CLP is pretty good for linear progr
 [CoinMP](https://projects.coin-or.org/CoinMP) is decribed as simple API for CLP and CBC (just what I need!), but appears to be buggy and obsolete.
 
 [SYMPHONY](https://projects.coin-or.org/SYMPHONY) looks easy enough to use and to distribute.
+
 ---
 1. SYMPHONY works, but require few patches to be easily wrappable (namely `extern C` to disable mangling and `#define printf` to disable console spam). I've created fork https://github.com/konovod/SYMPHONY with patches
 2. It is distributed under EPL1.0 that is incompatible with GPL, but otherwise pretty permissive.
