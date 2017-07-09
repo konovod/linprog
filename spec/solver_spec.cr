@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe Solver do
+describe Linprog do
   # TODO: Write tests
 
   it "works" do
@@ -123,6 +123,7 @@ describe Solver do
       b_ub: Linalg::GMat.new([[1, 12, 12]]).t,
       bounds: {Symphony::Constraint.integer, Symphony::Constraint.new(0.0, 6.0, true)}
     )
-    pp x, f
+    x.should eq [1, 2]
+    f.should eq -2
   end
 end

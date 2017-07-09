@@ -1,3 +1,3 @@
 require "spec"
 require "linalg"
-require "../src/solver"
+require "../src/linprog"

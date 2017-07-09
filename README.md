@@ -1,20 +1,13 @@
-# solver
+# linprog
 Idea is to provide wrapper for most performant opensource optimization tools that are available.
-
+This shard is about linear and mixed integer optimization.
 According to http://plato.asu.edu/bench.html CLP is pretty good for linear programming, and other projects of COIN-OR (CBC and IPOPT) are fine for nonlinear.
-
-IPOPT is pretty complex to even get installed, so it perhaps doesn't fit in the general-purpose scientific library.
 
 [CoinMP](https://projects.coin-or.org/CoinMP) is decribed as simple API for CLP and CBC (just what I need!), but appears to be buggy and obsolete.
 
-Will check if [SYMPHONY](https://projects.coin-or.org/SYMPHONY) is easy enough to use and to distribute.
-
-Fallback is to use [CLP](https://projects.coin-or.org/CLP) (and maybe [CBC](https://projects.coin-or.org/Cbc)?) directly and then go check other projects for quadratic\nonlinear tasks.
-
+[SYMPHONY](https://projects.coin-or.org/SYMPHONY) looks easy enough to use and to distribute.
 ---
-
-Results:
-1. SYMPHONY works, but require few patches to be easily wrappable. I've created fork https://github.com/konovod/SYMPHONY with patches
+1. SYMPHONY works, but require few patches to be easily wrappable (namely `extern C` to disable mangling and `#define printf` to disable console spam). I've created fork https://github.com/konovod/SYMPHONY with patches
 2. It is distributed under EPL1.0 that is incompatible with GPL, but otherwise pretty permissive.
 
 ## Installation
@@ -27,17 +20,23 @@ Results:
 
 ```crystal
 require "linalg"
-require "solver"
+require "linprog"
 
 # linear programming
+# x - solution, f - objective value
 x, f = Symphony.lpsolve(
+  # c - objective function
   c: Linalg::GMat.new([[0, -1]]),
+  # a_ub - left part of inequalities
   a_ub: Linalg::GMat.new([[-1, 1], [3, 2], [2, 3]]),
+  # b_ub - right part of inequalities
   b_ub: Linalg::GMat.new([[1, 12, 12]]).t,
+  # a_eq, b_eq - left and right parts of equalities, can be skipped if empty
+  # bounds - constraints to variables
   bounds: {Symphony::Constraint.none, Symphony::Constraint.new(-3.0, Float64::INFINITY)})
 pp x, f
 
-# constraint can be single for all vars
+# constraint can be same for all vars
 x, f = Symphony.lpsolve(
   c: Linalg::GMat.new([[0, -1]]),
   a_ub: Linalg::GMat.new([[-1, 1], [3, 2], [2, 3]]),
@@ -66,8 +65,7 @@ x, f = Symphony.lpsolve(
   bounds: {Symphony::Constraint.integer, Symphony::Constraint.new(0.0, 6.0, integer: true)})
 pp x, f
 
-# there is also more complex interface that allows to save\load problems, but it's WIP
-
+# there is also more complex interface that allows to save\load problems, but it's WIP, check spec dir for it
 ```
 
 
