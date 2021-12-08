@@ -17,6 +17,10 @@ According to http://plato.asu.edu/bench.html CLP is pretty good for linear progr
 2. `configure && make`
 3. copy `SYMPHONY/SYMPHONY/src/.libs/libSym.so.0.0.0` to /usr/lib, create symlink `/usr/lib/libSym.so.1` pointing to it
 
+Alternatively:
+you can use installation instructions for the upstream version: https://github.com/coin-or/SYMPHONY
+Master already has `extern C` fix but will spam some messages to console.
+
 ## Usage
 
 ```crystal

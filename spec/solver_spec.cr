@@ -25,7 +25,8 @@ describe Linprog do
     s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
     s1.free!
   end
-  pending "loads and save gmpl files" do
+
+  it "loads and save gmpl files" do
     s1 = Symphony::Solver.new
     s1.load_gmpl "./spec/sample.mod", "./spec/sample.dat"
     s1.solve

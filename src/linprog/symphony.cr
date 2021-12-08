@@ -187,6 +187,7 @@ module Symphony
     end
 
     def solve
+      call(set_int_param, "verbosity", -2)
       call solve
     end
 
