@@ -44,15 +44,15 @@ describe Linprog do
   it "loads explicit problem" do
     s1 = Symphony::Solver.new
     problem = Symphony::Problem.from_dense(
-      c: Linalg::Mat.row([1, 7, 4, 2, 3, 5]),
-      a_eq: Linalg::GMat.new([
+      c: LA::Mat.row([1, 7, 4, 2, 3, 5]),
+      a_eq: LA::GMat.new([
         [1, 1, 1, 0, 0, 0],
         [0, 0, 0, 1, 1, 1],
         [1, 0, 0, 1, 0, 0],
         [0, 1, 0, 0, 1, 0],
         [0, 0, 1, 0, 0, 1],
       ]),
-      b_eq: Linalg::Mat.column([30, 20, 15, 25, 10]))
+      b_eq: LA::Mat.column([30, 20, 15, 25, 10]))
     s1.load_explicit(problem)
     s1.solve
     s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
@@ -71,9 +71,9 @@ describe Linprog do
   end
 
   it "variables can be constrained" do
-    c = Linalg::GMat.new [[-1, 4]]
-    a = Linalg::GMat.new [[-3, 1], [1, 2]]
-    b = Linalg::GMat.new([[6, 4]]).t
+    c = LA::GMat.new [[-1, 4]]
+    a = LA::GMat.new [[-3, 1], [1, 2]]
+    b = LA::GMat.new([[6, 4]]).t
     x0_bounds = Symphony::Constraint.none
     x1_bounds = Symphony::Constraint.new(-3.0, Float64::INFINITY)
     solver = Symphony::Solver.new
@@ -88,9 +88,9 @@ describe Linprog do
   end
 
   it "can solve integer problems" do
-    c = Linalg::GMat.new [[0, -1]]
-    a = Linalg::GMat.new [[-1, 1], [3, 2], [2, 3]]
-    b = Linalg::GMat.new([[1, 12, 12]]).t
+    c = LA::GMat.new [[0, -1]]
+    a = LA::GMat.new [[-1, 1], [3, 2], [2, 3]]
+    b = LA::GMat.new([[1, 12, 12]]).t
     x0_bounds = Symphony::Constraint.positive
     x1_bounds = Symphony::Constraint.positive
     solver = Symphony::Solver.new
@@ -118,9 +118,9 @@ describe Linprog do
 
   it "allows simplified interface" do
     x, f = Symphony.lpsolve(
-      c: Linalg::GMat.new([[0, -1]]),
-      a_ub: Linalg::GMat.new([[-1, 1], [3, 2], [2, 3]]),
-      b_ub: Linalg::GMat.new([[1, 12, 12]]).t,
+      c: LA::GMat.new([[0, -1]]),
+      a_ub: LA::GMat.new([[-1, 1], [3, 2], [2, 3]]),
+      b_ub: LA::GMat.new([[1, 12, 12]]).t,
       bounds: {Symphony::Constraint.integer, Symphony::Constraint.new(0.0, 6.0, true)}
     )
     x.should eq [1, 2]

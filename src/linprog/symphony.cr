@@ -73,7 +73,7 @@ module Symphony
       @sparse_indices = Slice(Int32).new(@nrows*@ncolumns) { |i| i % @nrows }
       @sparse_values = Slice(Float64).new(@nrows*@ncolumns) do |i|
         row = i % @nrows
-        column = i / @nrows
+        column = i // @nrows
         Float64.new(row < a_ub.nrows ? a_ub[row, column] : a_eq[row, column])
       end
       case bounds
@@ -100,15 +100,15 @@ module Symphony
 
     def self.from_dense(*, c, a_eq, b_eq, bounds = nil)
       from_dense(c: c,
-        a_ub: Linalg::Mat.zeros(0, a_eq.ncolumns),
-        b_ub: Linalg::Mat.zeros(0, 1),
+        a_ub: LA::Mat.zeros(0, a_eq.ncolumns),
+        b_ub: LA::Mat.zeros(0, 1),
         a_eq: a_eq, b_eq: b_eq, bounds: bounds)
     end
 
     def self.from_dense(*, c, a_ub, b_ub, bounds = nil)
       from_dense(c: c,
-        a_eq: Linalg::Mat.zeros(0, a_ub.ncolumns),
-        b_eq: Linalg::Mat.zeros(0, 1),
+        a_eq: LA::Mat.zeros(0, a_ub.ncolumns),
+        b_eq: LA::Mat.zeros(0, 1),
         a_ub: a_ub, b_ub: b_ub, bounds: bounds)
     end
   end
