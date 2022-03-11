@@ -2,6 +2,7 @@ module LinProg
   class Variable
     @@param_id = 0u64
     @bound : Bound = Bound.none
+    @name : String?
     getter id : UInt64
 
     def value : Float64
@@ -9,30 +10,12 @@ module LinProg
       0.0
     end
 
-    def initialize(@bound = Bound.none)
+    def initialize(@name = nil, @bound = Bound.none)
       @@param_id += 1
       @id = @@param_id
     end
 
-    def +(other)
-      LinearCombination.new(self) + other
-    end
-
-    def -(other)
-      LinearCombination.new(self) - other
-    end
-
-    def *(other)
-      LinearCombination.new(self) * other
-    end
-
-    def /(other)
-      LinearCombination.new(self) / other
-    end
-
-    def -
-      -LinearCombination.new(self)
-    end
+    delegate :+, :-, :*, :/, :<=, :>=, eq, to: LinearCombination.new(self)
 
     def inspect(io)
       io << "LinProg::Variable#" << @id
@@ -111,20 +94,20 @@ module LinProg
       self + (-other)
     end
 
-    def ==(other)
-      Expression.new(true, self - other)
+    def eq(other)
+      Constraint.new(true, self - other)
     end
 
     def <=(other)
-      Expression.new(true, self - other)
+      Constraint.new(false, self - other)
     end
 
     def >=(other)
-      Expression.new(true, other - self)
+      Constraint.new(false, other - self)
     end
   end
 
-  class Expression
+  class Constraint
     property is_equality : Bool
     getter combination : LinearCombination
 
@@ -149,5 +132,17 @@ struct Number
 
   def *(x : LinProg::LinearCombination | LinProg::Variable)
     x*self
+  end
+
+  def eq(x : LinProg::LinearCombination | LinProg::Variable)
+    x.eq self
+  end
+
+  def <=(x : LinProg::LinearCombination | LinProg::Variable)
+    x >= self
+  end
+
+  def >=(x : LinProg::LinearCombination | LinProg::Variable)
+    x <= self
   end
 end
