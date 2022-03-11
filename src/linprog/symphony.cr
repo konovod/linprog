@@ -9,7 +9,7 @@ module LinProg
     Maximize = -1
   end
 
-  record Constraint, min : Float64, max : Float64, integer : Bool = false do
+  record Bound, min : Float64, max : Float64, integer : Bool = false do
     def self.none
       new(Float64::MIN, Float64::MAX)
     end
@@ -47,7 +47,7 @@ module LinProg
     getter rowrng
     getter correct = false
 
-    def self.from_dense(*, c, a_ub, b_ub, a_eq, b_eq, bounds : (Constraint | Indexable(Constraint) | Nil) = nil)
+    def self.from_dense(*, c, a_ub, b_ub, a_eq, b_eq, bounds : (Bound | Indexable(Bound) | Nil) = nil)
       raise ArgumentError.new("Columns count of a_ub and a_eq must match") if a_ub.ncolumns != a_eq.ncolumns
       raise ArgumentError.new("Rows count of b_ub and a_ub must match") if a_ub.nrows != b_ub.nrows
       raise ArgumentError.new("Rows count of b_eq and a_eq must match") if a_eq.nrows != b_eq.nrows
@@ -55,7 +55,7 @@ module LinProg
       raise ArgumentError.new("b_ub must have single column") if b_ub.ncolumns != 1
       raise ArgumentError.new("b_eq must have single column") if b_eq.ncolumns != 1
       raise ArgumentError.new("c must have single row") if c.nrows != 1
-      if bounds.is_a?(Indexable(Constraint)) && c.ncolumns != bounds.size
+      if bounds.is_a?(Indexable(Bound)) && c.ncolumns != bounds.size
         raise ArgumentError.new("bounds.size must match columns of c")
       end
       new(c: c, a_ub: a_ub, b_ub: b_ub, a_eq: a_eq, b_eq: b_eq, bounds: bounds)
@@ -76,7 +76,7 @@ module LinProg
         @collb = Slice(Float64).new(@ncolumns, 0.0)
         @colub = Slice(Float64).new(@ncolumns, Float64::MAX)
         @is_int = Slice(UInt8).new(@ncolumns, 0u8) # false
-      when Constraint
+      when Bound
         @collb = Slice(Float64).new(@ncolumns, bounds.min)
         @colub = Slice(Float64).new(@ncolumns, bounds.max)
         @is_int = Slice(UInt8).new(@ncolumns, bounds.integer ? 1u8 : 0u8)

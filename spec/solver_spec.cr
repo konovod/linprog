@@ -75,8 +75,8 @@ describe Linprog do
     c = LA::GMat.new [[-1, 4]]
     a = LA::GMat.new [[-3, 1], [1, 2]]
     b = LA::GMat.new([[6, 4]]).t
-    x0_bounds = LinProg::Constraint.none
-    x1_bounds = LinProg::Constraint.new(-3.0, Float64::INFINITY)
+    x0_bounds = LinProg::Bound.none
+    x1_bounds = LinProg::Bound.new(-3.0, Float64::INFINITY)
     solver = Symphony::Solver.new
     solver.load_explicit LinProg::Problem.from_dense(
       a_ub: a,
@@ -92,8 +92,8 @@ describe Linprog do
     c = LA::GMat.new [[0, -1]]
     a = LA::GMat.new [[-1, 1], [3, 2], [2, 3]]
     b = LA::GMat.new([[1, 12, 12]]).t
-    x0_bounds = LinProg::Constraint.positive
-    x1_bounds = LinProg::Constraint.positive
+    x0_bounds = LinProg::Bound.positive
+    x1_bounds = LinProg::Bound.positive
     solver = Symphony::Solver.new
     solver.load_explicit LinProg::Problem.from_dense(
       a_ub: a,
@@ -105,8 +105,8 @@ describe Linprog do
     solver.solution_f.should be_close -2.8, 1e-6
 
     solver.reset
-    x0_bounds = LinProg::Constraint.integer
-    x1_bounds = LinProg::Constraint.integer
+    x0_bounds = LinProg::Bound.integer
+    x1_bounds = LinProg::Bound.integer
     solver.load_explicit LinProg::Problem.from_dense(
       a_ub: a,
       b_ub: b,
@@ -122,7 +122,7 @@ describe Linprog do
       c: LA::GMat.new([[0, -1]]),
       a_ub: LA::GMat.new([[-1, 1], [3, 2], [2, 3]]),
       b_ub: LA::GMat.new([[1, 12, 12]]).t,
-      bounds: {LinProg::Constraint.integer, LinProg::Constraint.new(0.0, 6.0, true)}
+      bounds: {LinProg::Bound.integer, LinProg::Bound.new(0.0, 6.0, true)}
     )
     x.should eq [1, 2]
     f.should eq -2
