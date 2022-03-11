@@ -1,14 +1,9 @@
 require "./libSymphony"
 
-module Symphony
-  class LinProgError < Exception
+module LinProg
+  class Error < Exception
   end
 
-  alias Status = LibSymphony::Status
-  enum FileFormat
-    MPS
-    LP
-  end
   enum Direction
     Minimize =  1
     Maximize = -1
@@ -113,12 +108,34 @@ module Symphony
     end
   end
 
+  def self.solve(*args, **named_args)
+    solver = Symphony::Solver.new
+    solver.load_explicit(Problem.from_dense(**named_args))
+    solver.solve
+    st = solver.status
+    unless st == Symphony::Status::OPTIMAL_SOLUTION_FOUND
+      solver.free!
+      raise Error.new(st.to_s)
+    end
+    x, f = {solver.solution_x, solver.solution_f}
+    solver.free!
+    {x, f}
+  end
+end
+
+module Symphony
+  alias Status = LibSymphony::Status
+  enum FileFormat
+    MPS
+    LP
+  end
+
   class Solver
     @handle : LibSymphony::Environment?
 
     private macro call(function, *args)
       st = LibSymphony.{{function}}(@handle.not_nil!, {{*args}})
-      raise LinProgError.new(st.to_s) if st.to_i < 0
+      raise LinProg::Error.new(st.to_s) if st.to_i < 0
       st
     end
 
@@ -177,7 +194,7 @@ module Symphony
       free!
     end
 
-    def load_explicit(aproblem : Problem)
+    def load_explicit(aproblem : LinProg::Problem)
       raise ArgumentError.new "problem is incorrect" unless aproblem.correct
       call(explicit_load_problem, aproblem.ncolumns, aproblem.nrows,
         aproblem.sparse_starts, aproblem.sparse_indices, aproblem.sparse_values,
@@ -219,10 +236,10 @@ module Symphony
 
     def direction
       call get_obj_sense, out var
-      Direction.new(var)
+      LinProg::Direction.new(var)
     end
 
-    def direction=(value : Direction)
+    def direction=(value : LinProg::Direction)
       call set_obj_sense, value.to_i
     end
 
@@ -239,19 +256,5 @@ module Symphony
     #   call mc_solve
     # end
 
-  end
-
-  def self.lpsolve(*args, **named_args)
-    solver = Solver.new
-    solver.load_explicit(Problem.from_dense(**named_args))
-    solver.solve
-    st = solver.status
-    unless st == Status::OPTIMAL_SOLUTION_FOUND
-      solver.free!
-      raise LinProgError.new(st.to_s)
-    end
-    x, f = {solver.solution_x, solver.solution_f}
-    solver.free!
-    {x, f}
   end
 end
