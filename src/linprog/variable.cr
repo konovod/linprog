@@ -1,18 +1,18 @@
 module LinProg
+  alias VarID = UInt64
+
   class Variable
-    @@param_id = 0u64
     @bound : Bound = Bound.none
     @name : String?
-    getter id : UInt64
+    @owner : SymbolProblem?
+    getter id : VarID
 
     def value : Float64
       # TODO
-      0.0
+      @owner.var_value(self)
     end
 
-    def initialize(@name = nil, @bound = Bound.none)
-      @@param_id += 1
-      @id = @@param_id
+    def initialize(@owner, @id, @name = nil, @bound = Bound.none)
     end
 
     delegate :+, :-, :*, :/, :<=, :>=, eq, to: LinearCombination.new(self)

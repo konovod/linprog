@@ -26,13 +26,15 @@ describe Linprog do
     s1.free!
   end
 
-  it "loads and save gmpl files" do
-    s1 = Symphony::Solver.new
-    s1.load_gmpl "./spec/sample.mod", "./spec/sample.dat"
-    s1.solve
-    s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
-    s1.free!
-  end
+  {% if !flag?(:windows) %}
+    it "loads and save gmpl files" do
+      s1 = Symphony::Solver.new
+      s1.load_gmpl "./spec/sample.mod", "./spec/sample.dat"
+      s1.solve
+      s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND
+      s1.free!
+    end
+  {% end %}
 
   it "loads and save lp files" do
     s1 = Symphony::Solver.new

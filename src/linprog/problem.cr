@@ -105,4 +105,44 @@ module LinProg
         a_ub: a_ub, b_ub: b_ub, bounds: bounds)
     end
   end
+
+  class SymbolProblem
+    getter vars = [] of Variable
+    getter constraints = [] of Constraint
+    property objective : LinearCombination?
+
+    def initialize
+    end
+
+    def create_var(*args)
+      Variable.new(self, UInt64.new(vars.size), *args).tap { |v| @vars << v }
+    end
+
+    def var_value(var)
+      0.0
+    end
+
+    def constraint(c : Constraint)
+      @constraints << c
+    end
+
+    def minimize(objective)
+      @objective = objective
+    end
+
+    def maximize(objective)
+      @objective = -objective
+    end
+
+    @used_indices = {} of VarID => Int32
+
+    def solve
+      raise unless obj = @objective
+
+      # first generate used indices map from constraints and objective
+      # create problem
+      # solve
+      # save solution
+    end
+  end
 end

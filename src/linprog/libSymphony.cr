@@ -1,4 +1,8 @@
-@[Link("Sym")]
+{% if flag?(:windows) %}
+  @[Link("libSymphony")]
+{% else %}
+  @[Link("Sym")]
+{% end %}
 lib LibSymphony
   enum Status
     NO_PROBLEM                  = 225
