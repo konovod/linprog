@@ -55,7 +55,8 @@ describe Linprog do
         [0, 1, 0, 0, 1, 0],
         [0, 0, 1, 0, 0, 1],
       ]),
-      b_eq: LA::Mat.column([30, 20, 15, 25, 10]))
+      b_eq: LA::Mat.column([30, 20, 15, 25, 10]),
+      bounds: LinProg::Bound.positive)
     s1.load_explicit(problem)
     s1.solve
     s1.status.should eq Symphony::Status::OPTIMAL_SOLUTION_FOUND

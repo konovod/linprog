@@ -2,14 +2,17 @@ module LinProg
   alias VarID = UInt64
 
   class Variable
-    @bound : Bound = Bound.none
+    property bound : Bound = Bound.none
     @name : String?
-    @owner : SymbolProblem?
+    getter owner : SymbolProblem?
     getter id : VarID
 
     def value : Float64
-      # TODO
-      @owner.var_value(self)
+      if own = @owner
+        own.var_value(self)
+      else
+        0.0
+      end
     end
 
     def initialize(@owner, @id, @name = nil, @bound = Bound.none)
