@@ -73,12 +73,35 @@ pp x, f
 # there is also more complex interface that allows to save\load problems, but it's WIP, check spec dir for it
 ```
 
+## DSL
+  There is a dsl for nice creation of problems. It is WIP in a sense that more features will be added (most important is to check how it works with MultiArray to be on par with AMPL features), but right now following works:
+  ```crystal
+    # Create a problem
+    task = LinProg::SymbolProblem.new
+    # add a vars with (optional) bounds
+    x = task.create_var(bound: LinProg::Bound.integer)
+    y = task.create_var(bound: LinProg::Bound.new(0.0, 6.0, true))
+    # add constraints in a natural way
+    task.st(x + 1 >= y)
+    task.st(3*x + 2*y <= 12)
+    task.st(2*x + 3*y <= 12)
+    # set objective and direction of optimization
+    task.maximize(y + 1)
+    # solve
+    task.solve
+    # now vars have values from a solution
+    x.value.should eq 1
+    y.value.should eq 2
+  ```
 
 ## Roadmap:
-
 - [ ] warmstarting
 - [ ] sensitivity analysis
 - [ ] access to solver parameters
 - [ ] way to reset solver properly or otherwise avoid memory leak
 - [ ] sparse matrix support
-- [ ] DSL for problems creation
+- [X] DSL for problems creation
+  - [ ] Check integration with https://github.com/konovod/multiarray 
+  - [ ] More fleshy example
+- [ ] GLPK bindings to provide easy-to-install solution
+- [ ] CI
