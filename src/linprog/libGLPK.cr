@@ -4,18 +4,41 @@
   @[Link("glpk")]
 {% end %}
 lib LibGLPK
-  enum OptimizationDirection
+  enum ReturnCode
+    Success =    0
+    EBADB   = 0x01 # invalid basis
+    ESING   = 0x02 # singular matrix
+    ECOND   = 0x03 # ill-conditioned matrix
+    EBOUND  = 0x04 # invalid bounds
+    EFAIL   = 0x05 # solver failed
+    EOBJLL  = 0x06 # objective lower limit reached
+    EOBJUL  = 0x07 # objective upper limit reached
+    EITLIM  = 0x08 # iteration limit exceeded
+    ETMLIM  = 0x09 # time limit exceeded
+    ENOPFS  = 0x0A # no primal feasible solution
+    ENODFS  = 0x0B # no dual feasible solution
+    EROOT   = 0x0C # root LP optimum not provided
+    ESTOP   = 0x0D # search terminated by application
+    EMIPGAP = 0x0E # relative mip gap tolerance reached
+    ENOFEAS = 0x0F # no primal/dual feasible solution
+    ENOCVG  = 0x10 # no convergence
+    EINSTAB = 0x11 # numerical instability
+    EDATA   = 0x12 # invalid data
+    ERANGE  = 0x13 # result out of range
+  end
+
+  enum OptimizationDirection : Int32
     MIN = 1
     MAX = 2
   end
 
-  enum VariableKind
+  enum VariableKind : Int32
     Continuous = 1
     Integer    = 2
     Binary     = 3
   end
 
-  enum VariableType
+  enum VariableType : Int32
     Free   = 1
     Lower  = 2
     Upper  = 3
@@ -23,7 +46,7 @@ lib LibGLPK
     Fixed  = 5
   end
 
-  enum VariableStatus
+  enum VariableStatus : Int32
     Basic      = 1
     LowerBound = 2
     UpperBound = 3
@@ -32,7 +55,7 @@ lib LibGLPK
   end
 
   @[Flags]
-  enum ScalingOptions
+  enum ScalingOptions : Int32
     GeometricMean  = 0x01
     Equilibration  = 0x10
     PowerOfTwo     = 0x20
@@ -40,13 +63,13 @@ lib LibGLPK
     Auto           = 0x80
   end
 
-  enum SolutionIndicator
+  enum SolutionIndicator : Int32
     Basic = 1
     IPT   = 2
     MIP   = 3
   end
 
-  enum SolutionStatus
+  enum SolutionStatus : Int32
     Undefined  = 1
     Feasible   = 2
     Infeasible = 3
@@ -62,13 +85,13 @@ lib LibGLPK
   fun create_prob = glp_create_prob : Prob
   fun set_prob_name = glp_set_prob_name(p : Prob, name : LibC::Char*)
   fun set_obj_name = glp_set_obj_name(p : Prob, name : LibC::Char*)
-  fun set_obj_dir = glp_set_obj_dir(p : Prob, dir : LibC::Int)
+  fun set_obj_dir = glp_set_obj_dir(p : Prob, dir : OptimizationDirection)
   fun add_rows = glp_add_rows(p : Prob, nrs : LibC::Int) : LibC::Int
   fun add_cols = glp_add_cols(p : Prob, ncs : LibC::Int) : LibC::Int
   fun set_row_name = glp_set_row_name(p : Prob, i : LibC::Int, name : LibC::Char*)
   fun set_col_name = glp_set_col_name(p : Prob, j : LibC::Int, name : LibC::Char*)
-  fun set_row_bnds = glp_set_row_bnds(p : Prob, i : LibC::Int, type : LibC::Int, lb : LibC::Double, ub : LibC::Double)
-  fun set_col_bnds = glp_set_col_bnds(p : Prob, j : LibC::Int, type : LibC::Int, lb : LibC::Double, ub : LibC::Double)
+  fun set_row_bnds = glp_set_row_bnds(p : Prob, i : LibC::Int, type : VariableType, lb : LibC::Double, ub : LibC::Double)
+  fun set_col_bnds = glp_set_col_bnds(p : Prob, j : LibC::Int, type : VariableType, lb : LibC::Double, ub : LibC::Double)
   fun set_obj_coef = glp_set_obj_coef(p : Prob, j : LibC::Int, coef : LibC::Double)
   fun set_mat_row = glp_set_mat_row(p : Prob, i : LibC::Int, len : LibC::Int, ind : LibC::Int*, val : LibC::Double*)
   fun set_mat_col = glp_set_mat_col(p : Prob, j : LibC::Int, len : LibC::Int, ind : LibC::Int*, val : LibC::Double*)
@@ -82,15 +105,15 @@ lib LibGLPK
   fun delete_prob = glp_delete_prob(p : Prob)
   fun get_prob_name = glp_get_prob_name(p : Prob) : LibC::Char*
   fun get_obj_name = glp_get_obj_name(p : Prob) : LibC::Char*
-  fun get_obj_dir = glp_get_obj_dir(p : Prob) : LibC::Int
+  fun get_obj_dir = glp_get_obj_dir(p : Prob) : OptimizationDirection
   fun get_num_rows = glp_get_num_rows(p : Prob) : LibC::Int
   fun get_num_cols = glp_get_num_cols(p : Prob) : LibC::Int
   fun get_row_name = glp_get_row_name(p : Prob, i : LibC::Int) : LibC::Char*
   fun get_col_name = glp_get_col_name(p : Prob, j : LibC::Int) : LibC::Char*
-  fun get_row_type = glp_get_row_type(p : Prob, i : LibC::Int) : LibC::Int
+  fun get_row_type = glp_get_row_type(p : Prob, i : LibC::Int) : VariableType
   fun get_row_lb = glp_get_row_lb(p : Prob, i : LibC::Int) : LibC::Double
   fun get_row_ub = glp_get_row_ub(p : Prob, i : LibC::Int) : LibC::Double
-  fun get_col_type = glp_get_col_type(p : Prob, j : LibC::Int) : LibC::Int
+  fun get_col_type = glp_get_col_type(p : Prob, j : LibC::Int) : VariableType
   fun get_col_lb = glp_get_col_lb(p : Prob, j : LibC::Int) : LibC::Double
   fun get_col_ub = glp_get_col_ub(p : Prob, j : LibC::Int) : LibC::Double
   fun get_obj_coef = glp_get_obj_coef(p : Prob, j : LibC::Int) : LibC::Double
@@ -105,52 +128,82 @@ lib LibGLPK
   fun set_sjj = glp_set_sjj(p : Prob, j : LibC::Int, sjj : LibC::Double)
   fun get_rii = glp_get_rii(p : Prob, i : LibC::Int) : LibC::Double
   fun get_sjj = glp_get_sjj(p : Prob, j : LibC::Int) : LibC::Double
-  fun scale_prob = glp_scale_prob(p : Prob, flags : LibC::Int)
+  fun scale_prob = glp_scale_prob(p : Prob, flags : ScalingOptions)
   fun unscale_prob = glp_unscale_prob(p : Prob)
-  fun set_row_stat = glp_set_row_stat(p : Prob, i : LibC::Int, stat : LibC::Int)
-  fun set_col_stat = glp_set_col_stat(p : Prob, j : LibC::Int, stat : LibC::Int)
+  fun set_row_stat = glp_set_row_stat(p : Prob, i : LibC::Int, stat : VariableStatus)
+  fun set_col_stat = glp_set_col_stat(p : Prob, j : LibC::Int, stat : VariableStatus)
   fun std_basis = glp_std_basis(p : Prob)
   fun adv_basis = glp_adv_basis(p : Prob, flags : LibC::Int)
   fun cpx_basis = glp_cpx_basis(p : Prob)
-  fun simplex = glp_simplex(p : Prob, parm : Smcp*) : LibC::Int
+  fun simplex = glp_simplex(p : Prob, parm : Smcp*) : ReturnCode
 
-  struct Smcp
-    msg_lev : LibC::Int
-    meth : LibC::Int
-    pricing : LibC::Int
-    r_test : LibC::Int
-    tol_bnd : LibC::Double
-    tol_dj : LibC::Double
-    tol_piv : LibC::Double
-    obj_ll : LibC::Double
-    obj_ul : LibC::Double
-    it_lim : LibC::Int
-    tm_lim : LibC::Int
-    out_frq : LibC::Int
-    out_dly : LibC::Int
-    presolve : LibC::Int
-    excl : LibC::Int
-    shift : LibC::Int
-    aorn : LibC::Int
-    foo_bar : LibC::Double[33]
+  enum MessageLevel : Int32
+    OFF = 0 # no output
+    ERR = 1 # warning and error messages only
+    ON  = 2 # normal output
+    ALL = 3 # full output
+    DBG = 4 # debug output
   end
 
-  fun exact = glp_exact(p : Prob, parm : Smcp*) : LibC::Int
+  enum SimplexOption : Int32
+    PRIMAL = 1 # use primal simplex
+    DUALP  = 2 # use dual; if it fails, use primal
+    DUAL   = 3 #  use dual simplex
+  end
+
+  enum PricingTech : Int32
+    STD = 0x11 # standard (Dantzig's rule)
+    PSE = 0x22 # projected steepest edge
+  end
+
+  enum RatioTest : Int32
+    STD  = 0x11 # standard (textbook)
+    HAR  = 0x22 # Harris' two-pass ratio test
+    FLIP = 0x33 # long-step (flip-flop) ratio test
+  end
+
+  enum AorN : Int32
+    USE_AT = 1 # use A matrix in row-wise format
+    USE_NT = 2 # use N matrix in row-wise format
+  end
+
+  struct Smcp
+    msg_lev : MessageLevel     # message level
+    meth : SimplexOption       # simplex method option
+    pricing : PricingTech      # pricing technique
+    r_test : RatioTest         # ratio test technique
+    tol_bnd : LibC::Double     # primal feasibility tolerance
+    tol_dj : LibC::Double      #  dual feasibility tolerance
+    tol_piv : LibC::Double     # pivot tolerance
+    obj_ll : LibC::Double      # lower objective limit
+    obj_ul : LibC::Double      #  upper objective limit
+    it_lim : LibC::Int         # simplex iteration limit
+    tm_lim : LibC::Int         #  time limit, ms
+    out_frq : LibC::Int        # display output frequency, ms
+    out_dly : LibC::Int        #  display output delay, ms
+    presolve : LibC::Int       # enable/disable using LP presolver
+    excl : LibC::Int           # exclude fixed non-basic variables
+    shift : LibC::Int          # shift bounds of variables to zero
+    aorn : AorN                # option to use A or N
+    foo_bar : LibC::Double[33] #  (reserved)
+  end
+
+  fun exact = glp_exact(p : Prob, parm : Smcp*) : ReturnCode
   fun init_smcp = glp_init_smcp(parm : Smcp*)
-  fun get_status = glp_get_status(p : Prob) : LibC::Int
-  fun get_prim_stat = glp_get_prim_stat(p : Prob) : LibC::Int
-  fun get_dual_stat = glp_get_dual_stat(p : Prob) : LibC::Int
+  fun get_status = glp_get_status(p : Prob) : SolutionStatus
+  fun get_prim_stat = glp_get_prim_stat(p : Prob) : SolutionStatus
+  fun get_dual_stat = glp_get_dual_stat(p : Prob) : SolutionStatus
   fun get_obj_val = glp_get_obj_val(p : Prob) : LibC::Double
-  fun get_row_stat = glp_get_row_stat(p : Prob, i : LibC::Int) : LibC::Int
+  fun get_row_stat = glp_get_row_stat(p : Prob, i : LibC::Int) : VariableStatus
   fun get_row_prim = glp_get_row_prim(p : Prob, i : LibC::Int) : LibC::Double
   fun get_row_dual = glp_get_row_dual(p : Prob, i : LibC::Int) : LibC::Double
-  fun get_col_stat = glp_get_col_stat(p : Prob, j : LibC::Int) : LibC::Int
+  fun get_col_stat = glp_get_col_stat(p : Prob, j : LibC::Int) : VariableStatus
   fun get_col_prim = glp_get_col_prim(p : Prob, j : LibC::Int) : LibC::Double
   fun get_col_dual = glp_get_col_dual(p : Prob, j : LibC::Int) : LibC::Double
   fun get_unbnd_ray = glp_get_unbnd_ray(p : Prob) : LibC::Int
   fun get_it_cnt = glp_get_it_cnt(p : Prob) : LibC::Int
   fun set_it_cnt = glp_set_it_cnt(p : Prob, it_cnt : LibC::Int)
-  fun interior = glp_interior(p : Prob, parm : Iptcp*) : LibC::Int
+  fun interior = glp_interior(p : Prob, parm : Iptcp*) : ReturnCode
 
   struct Iptcp
     msg_lev : LibC::Int
@@ -159,17 +212,17 @@ lib LibGLPK
   end
 
   fun init_iptcp = glp_init_iptcp(parm : Iptcp*)
-  fun ipt_status = glp_ipt_status(p : Prob) : LibC::Int
+  fun ipt_status = glp_ipt_status(p : Prob) : SolutionStatus
   fun ipt_obj_val = glp_ipt_obj_val(p : Prob) : LibC::Double
   fun ipt_row_prim = glp_ipt_row_prim(p : Prob, i : LibC::Int) : LibC::Double
   fun ipt_row_dual = glp_ipt_row_dual(p : Prob, i : LibC::Int) : LibC::Double
   fun ipt_col_prim = glp_ipt_col_prim(p : Prob, j : LibC::Int) : LibC::Double
   fun ipt_col_dual = glp_ipt_col_dual(p : Prob, j : LibC::Int) : LibC::Double
-  fun set_col_kind = glp_set_col_kind(p : Prob, j : LibC::Int, kind : LibC::Int)
-  fun get_col_kind = glp_get_col_kind(p : Prob, j : LibC::Int) : LibC::Int
+  fun set_col_kind = glp_set_col_kind(p : Prob, j : LibC::Int, kind : VariableKind)
+  fun get_col_kind = glp_get_col_kind(p : Prob, j : LibC::Int) : VariableKind
   fun get_num_int = glp_get_num_int(p : Prob) : LibC::Int
   fun get_num_bin = glp_get_num_bin(p : Prob) : LibC::Int
-  fun intopt = glp_intopt(p : Prob, parm : Iocp*) : LibC::Int
+  fun intopt = glp_intopt(p : Prob, parm : Iocp*) : ReturnCode
 
   struct Iocp
     msg_lev : LibC::Int
@@ -203,11 +256,11 @@ lib LibGLPK
   end
 
   fun init_iocp = glp_init_iocp(parm : Iocp*)
-  fun mip_status = glp_mip_status(p : Prob) : LibC::Int
+  fun mip_status = glp_mip_status(p : Prob) : SolutionStatus
   fun mip_obj_val = glp_mip_obj_val(p : Prob) : LibC::Double
   fun mip_row_val = glp_mip_row_val(p : Prob, i : LibC::Int) : LibC::Double
   fun mip_col_val = glp_mip_col_val(p : Prob, j : LibC::Int) : LibC::Double
-  fun check_kkt = glp_check_kkt(p : Prob, sol : LibC::Int, cond : LibC::Int, ae_max : LibC::Double*, ae_ind : LibC::Int*, re_max : LibC::Double*, re_ind : LibC::Int*)
+  fun check_kkt = glp_check_kkt(p : Prob, sol : LibC::Int, cond : SolutionIndicator, ae_max : LibC::Double*, ae_ind : LibC::Int*, re_max : LibC::Double*, re_ind : LibC::Int*)
   fun print_sol = glp_print_sol(p : Prob, fname : LibC::Char*) : LibC::Int
   fun read_sol = glp_read_sol(p : Prob, fname : LibC::Char*) : LibC::Int
   fun write_sol = glp_write_sol(p : Prob, fname : LibC::Char*) : LibC::Int
@@ -223,9 +276,17 @@ lib LibGLPK
   fun bf_updated = glp_bf_updated(p : Prob) : LibC::Int
   fun get_bfcp = glp_get_bfcp(p : Prob, parm : Bfcp*)
 
+  enum FactorizationType : Int32
+    PlainLU       = 0x00
+    BlockLU       = 0x10
+    ForrestTomlin = 0x01
+    SchurGolub    = 0x02
+    SchurGivens   = 0x03
+  end
+
   struct Bfcp
     msg_lev : LibC::Int
-    type : LibC::Int
+    type : FactorizationType
     lu_size : LibC::Int
     piv_tol : LibC::Double
     piv_lim : LibC::Int
@@ -283,7 +344,7 @@ lib LibGLPK
   end
 
   fun ios_pool_size = glp_ios_pool_size(t : Tree) : LibC::Int
-  fun ios_add_row = glp_ios_add_row(t : Tree, name : LibC::Char*, klass : LibC::Int, flags : LibC::Int, len : LibC::Int, ind : LibC::Int*, val : LibC::Double*, type : LibC::Int, rhs : LibC::Double) : LibC::Int
+  fun ios_add_row = glp_ios_add_row(t : Tree, name : LibC::Char*, klass : LibC::Int, flags : LibC::Int, len : LibC::Int, ind : LibC::Int*, val : LibC::Double*, type : VariableType, rhs : LibC::Double) : LibC::Int
   fun ios_del_row = glp_ios_del_row(t : Tree, i : LibC::Int)
   fun ios_clear_pool = glp_ios_clear_pool(t : Tree)
   fun ios_can_branch = glp_ios_can_branch(t : Tree, j : LibC::Int) : LibC::Int
@@ -318,7 +379,7 @@ lib LibGLPK
   fun mpl_read_data = glp_mpl_read_data(tran : Tran, fname : LibC::Char*) : LibC::Int
   fun mpl_generate = glp_mpl_generate(tran : Tran, fname : LibC::Char*) : LibC::Int
   fun mpl_build_prob = glp_mpl_build_prob(tran : Tran, prob : Prob)
-  fun mpl_postsolve = glp_mpl_postsolve(tran : Tran, prob : Prob, sol : LibC::Int) : LibC::Int
+  fun mpl_postsolve = glp_mpl_postsolve(tran : Tran, prob : Prob, sol : SolutionIndicator) : LibC::Int
   fun mpl_free_wksp = glp_mpl_free_wksp(tran : Tran)
   fun read_cnfsat = glp_read_cnfsat(p : Prob, fname : LibC::Char*) : LibC::Int
   fun check_cnfsat = glp_check_cnfsat(p : Prob) : LibC::Int
