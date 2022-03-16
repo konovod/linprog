@@ -1,23 +1,25 @@
 require "./libSymphony"
 require "./problem"
 
-module LinProg
-  def self.solve(*args, **named_args)
+module Symphony
+  def self.solve(problem : LinProg::Problem)
     solver = Symphony::Solver.new
-    solver.load_explicit(Problem.from_dense(**named_args))
+    solver.load_explicit(problem)
     solver.solve
     st = solver.status
     unless st == Symphony::Status::OPTIMAL_SOLUTION_FOUND
       solver.free!
-      raise Error.new(st.to_s)
+      raise LinProg::Error.new(st.to_s)
     end
     x, f = {solver.solution_x, solver.solution_f}
     solver.free!
     {x, f}
   end
-end
 
-module Symphony
+  def self.solve(**named_args)
+    solve(LinProg::Problem.from_dense(**named_args))
+  end
+
   alias Status = LibSymphony::Status
   enum FileFormat
     MPS

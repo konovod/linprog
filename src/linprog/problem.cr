@@ -206,17 +206,9 @@ module LinProg
       # create problem
       problem = Problem.new(vars: @vars, constraints: @constraints, id_to_index: @used_indices, obj: obj)
       # solve
-      solver = Symphony::Solver.new
-      solver.load_explicit(problem)
-      solver.solve
-      st = solver.status
-      unless st == Symphony::Status::OPTIMAL_SOLUTION_FOUND
-        solver.free!
-        raise Error.new(st.to_s)
-      end
+      x, f = Symphony.solve(problem)
       # save solution
-      @var_values = solver.solution_x.dup
-      solver.free!
+      @var_values = x
     end
   end
 end

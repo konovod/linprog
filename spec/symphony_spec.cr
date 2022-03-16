@@ -121,7 +121,7 @@ describe Linprog do
   end
 
   it "allows simplified interface" do
-    x, f = LinProg.solve(
+    x, f = Symphony.solve(
       c: LA::GMat.new([[0, -1]]),
       a_ub: LA::GMat.new([[-1, 1], [3, 2], [2, 3]]),
       b_ub: LA::GMat.new([[1, 12, 12]]).t,
