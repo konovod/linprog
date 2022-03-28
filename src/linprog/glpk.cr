@@ -32,10 +32,10 @@ module GLPK
     end
     # load constraint types
     problem.nrows.times do |i|
-      if problem.rowrhs[i] == 'E'.ord
+      if problem.rowsen[i] == 'E'.ord
         LibGLPK.set_row_bnds(handle, i + 1, LibGLPK::VariableType::Fixed, problem.rowrhs[i], 0.0)
       else
-        LibGLPK.set_row_bnds(handle, i + 1, LibGLPK::VariableType::Upper, problem.rowrhs[i], 0.0)
+        LibGLPK.set_row_bnds(handle, i + 1, LibGLPK::VariableType::Upper, 0.0, problem.rowrhs[i])
       end
     end
     # load constraints matrix
