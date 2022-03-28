@@ -6,11 +6,16 @@ module GLPK
     MIP
   end
 
-  def self.solve(**named_args)
-    solve(LinProg::Problem.from_dense(**named_args))
+  def self.solve(*, driver : Driver? = nil, **named_args)
+    solve(LinProg::Problem.from_dense(**named_args), driver)
   end
 
-  def self.solve(problem : LinProg::Problem, driver = Driver::Simplex)
+  def self.solve(problem : LinProg::Problem, driver : Driver? = nil)
+    # select default driver
+    unless driver
+      driver = (problem.is_int.any? { |x| x != 0 }) ? Driver::MIP : Driver::Simplex
+    end
+
     # create problem
     handle = LibGLPK.create_prob
     LibGLPK.add_rows handle, problem.nrows
@@ -50,6 +55,7 @@ module GLPK
     # load objective
     LibGLPK.set_obj_dir(handle, LibGLPK::OptimizationDirection::MIN)
     problem.obj.each_with_index { |v, i| LibGLPK.set_obj_coef(handle, i + 1, v) }
+
     # solve
     code = case driver
            in .simplex?
@@ -67,6 +73,10 @@ module GLPK
              LibGLPK.init_iptcp(out params3)
              LibGLPK.interior(handle, pointerof(params3))
            in .mip?
+             LibGLPK.cpx_basis(handle)
+             LibGLPK.init_smcp(out params41)
+             params41.presolve = 1
+             LibGLPK.simplex(handle, pointerof(params41))
              LibGLPK.init_iocp(out params4)
              LibGLPK.intopt(handle, pointerof(params4))
            end

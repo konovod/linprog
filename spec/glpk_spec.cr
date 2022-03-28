@@ -20,4 +20,15 @@ describe "GLPK" do
     )
     f.should be_close -2.8, 1e-6
   end
+
+  it "solve MIP problems" do
+    x, f = GLPK.solve(
+      c: LA::GMat.new([[0, -1]]),
+      a_ub: LA::GMat.new([[-1, 1], [3, 2], [2, 3]]),
+      b_ub: LA::GMat.new([[1, 12, 12]]).t,
+      bounds: {LinProg::Bound.integer, LinProg::Bound.new(0.0, 6.0, true)}
+    )
+    x.should eq [1, 2]
+    f.should eq -2
+  end
 end
